@@ -17,7 +17,6 @@ int DS18S20_Pin = 2; //DS18S20 Signal pin on digital 2
 OneWire ds(DS18S20_Pin);  // on digital pin 2
 // RF init
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-int myTemp[2];
 
 void setup(void) {
   Serial.begin(57600);
@@ -34,7 +33,6 @@ void setup(void) {
 
   radio.startListening();
   radio.printDetails();
-//  radio.openWritingPipe(pipe);
 }
 
 void loop(void) {
@@ -49,7 +47,7 @@ void loop(void) {
   
   radio.stopListening();
   
-  res = radio.write( &myTemp, sizeof(myTemp));
+  res = radio.write( &tempWord, sizeof(tempWord));
   
   if (res)
     printf("ok...");
@@ -125,19 +123,6 @@ unsigned int getTemp(){
 
   return ((data[1] << 8) | data[0]);
 
-/*
-  
-  byte MSB = data[1];
-  byte LSB = data[0];
-  // TODO: make it better
-  myTemp[0] = data[0];
-  myTemp[1] = data[1];
-
-  float tempRead = ((MSB << 8)   | LSB); //using two's compliment
-  float TemperatureSum = tempRead / 16;
-  
-  Serial.println(TemperatureSum);
-*/
 }
 
 
