@@ -7,7 +7,7 @@
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define CE_PIN   9
 #define CSN_PIN 10
-#define RCV_TIMEOUT 350
+#define RCV_TIMEOUT 1000
 
 const uint64_t pipes[2] = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};
 

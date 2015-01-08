@@ -16,11 +16,11 @@ void setup() {
   Serial.println("Base Station starting");
   radio.begin();
   radio.setRetries(15, 15);
-  radio.setPayloadSize(8);
+  radio.setPayloadSize(4);
 
   // Pipes config for receiver
   radio.openWritingPipe(pipes[1]);
-  radio.openReadingPipe(1,pipes[0]);
+  radio.openReadingPipe(1, pipes[0]);
 
   radio.startListening();
   printf_begin();
@@ -37,13 +37,11 @@ void loop() {
       
       while (!done) {
         // Fetch the payload, and see if this was the last one.
-        done = radio.read( &tempData, sizeof(tempData) );
-        Serial.println(tempData);
+        done = radio.read(&tempData, sizeof(tempData));
 
-        float temp = tempFromWord(tempData);
-        Serial.print("Got temp ");
-        Serial.print(temp);
-        Serial.print(" ");
+        char tempStr[10];
+        ftoa(tempStr, realTemp(tempData), 2);        
+        printf("Got temperature: %s (%i)... ", tempStr, tempData);
 
 	delay(100);
       }
@@ -55,10 +53,29 @@ void loop() {
       // Resume listening so we catch the next packets.
       radio.startListening();
     }
+    
   delay(1000);
 } // loop
 
-float tempFromWord(unsigned int data) {
-  return (float)data / 16;
+
+float realTemp(unsigned int data) {
+    return (float) data / 16;
+}
+
+/*
+ * Returns string representation of a float
+ */
+char *ftoa(char *a, double f, int precision)
+{
+  long p[] = {0,10,100,1000,10000,100000,1000000,10000000,100000000};
+  
+  char *ret = a;
+  long heiltal = (long)f;
+  itoa(heiltal, a, 10);
+  while (*a != '\0') a++;
+  *a++ = '.';
+  long desimal = abs((long)((f - heiltal) * p[precision]));
+  itoa(desimal, a, 10);
+  return ret;
 }
 
